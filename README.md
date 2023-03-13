@@ -1,1 +1,1 @@
-# Automating Adobe Experience Platform Deployments [L726]
+## Automating Adobe Experience Platform Deployments [L726]
