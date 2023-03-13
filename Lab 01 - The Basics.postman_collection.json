@@ -1,0 +1,935 @@
+{
+	"info": {
+		"_postman_id": "66f5422f-2ef9-4fc3-872e-7bbedbdf81c9",
+		"name": "Lab 01 - The Basics",
+		"description": "## Collection Notes:\n\n- Learning the basics (foundational items) with constructing assets in Platform\n    \n\n## Collection Calls:\n\n<img src=\"https://content.pstmn.io/f57b7042-a59c-4fe9-8cb2-a424fbddb1cc/aW1hZ2UucG5n\" alt=\"\" height=\"217\" width=\"811\">",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4873115"
+	},
+	"item": [
+		{
+			"name": "1.1 - Check sandbox access",
+			"item": [
+				{
+					"name": "Retrieve your sandbox",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"/** Begin Adobe-provided Pre-Request Scripts **/",
+									"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+									"pm.request.headers.each(header => {",
+									"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+									"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+									"    }",
+									"});",
+									"",
+									"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+									"pm.request.url.query.remove(q => { ",
+									"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+									"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+									"    } ",
+									"});",
+									"/** End Adobe-provided Pre-Request Scripts **/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"description": "The access token which can be copied from your Experience Platform integration, prefixed with \"Bearer\". For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+								"type": "string"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{API_KEY}}",
+								"description": "The API key which can be copied from your Experience Platform integration, prefixed with \"Bearer\". For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+								"type": "string"
+							},
+							{
+								"key": "x-gw-ims-org-id",
+								"value": "{{IMS_ORG}}",
+								"description": "The access token which can be copied from your Experience Platform integration, prefixed with \"Bearer\". For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+								"type": "string"
+							},
+							{
+								"key": "x-sandbox-name",
+								"value": "{{SANDBOX_NAME}}",
+								"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+								"type": "string"
+							}
+						],
+						"url": {
+							"raw": "https://platform.adobe.io/data/foundation/sandbox-management/sandboxes/{{SANDBOX_NAME}}",
+							"protocol": "https",
+							"host": [
+								"platform",
+								"adobe",
+								"io"
+							],
+							"path": [
+								"data",
+								"foundation",
+								"sandbox-management",
+								"sandboxes",
+								"{{SANDBOX_NAME}}"
+							]
+						},
+						"description": "# Call Overview:\n\n- Retrieve the current SANDBOX_NAME details\n- Also confirms the API Project has access to this box\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/db406507-0d91-4d0b-9af6-45b8cc1eaa6e/aW1hZ2UucG5n\" alt=\"\" height=\"384\" width=\"943\">\n\n## Response Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `name` | This is the SANDBOX_NAME value that is used in the backend |\n| `title` | This is the friendly name version of the sandbox (will display in the UI and sandbox dropdown) |\n\n---\n\n# Lab Task:\n\n1. Click `Send` to execute the call\n2. Confirm 200 and sandbox details (should match your seat number)\n3. If this sandbox is the wrong seat number, you need to edit your Postman Environment file\n    \n\n## Key Takeaways:\n\n- This confirms access to the box and stats/values/details about the sandbox"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1.2 - Classroom Practice",
+			"item": [
+				{
+					"name": "1 - Create a Schema",
+					"item": [
+						{
+							"name": "Step 1 - Create a Custom Data Type (recent order details)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token provided after authorization in the format \"Bearer {ACCESS_TOKEN}\"",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "Your specific API key for your unique Platform configuration ({API_KEY})",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "Unique Identifier for your IMS Organization ({IMS_ORG})",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"{{lab_number}}: DT Recent Order Details\",\r\n    \"description\": \"{{lab_number}}: DT Recent Order Details\",\r\n    \"type\": \"object\",\r\n    \"properties\": {\r\n        \"productName\": {\r\n            \"title\": \"Product Name\",\r\n            \"description\": \"\",\r\n            \"type\": \"string\"\r\n        },\r\n        \"productCost\": {\r\n            \"title\": \"Product Cost\",\r\n            \"description\": \"\",\r\n            \"type\": \"number\"\r\n        },\r\n        \"productQuantity\": {\r\n            \"title\": \"Product Quantity\",\r\n            \"description\": \"\",\r\n            \"type\": \"integer\"\r\n        }\r\n    }\r\n}"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/:CONTAINER_ID/datatypes",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										":CONTAINER_ID",
+										"datatypes"
+									],
+									"variable": [
+										{
+											"key": "CONTAINER_ID",
+											"value": "tenant"
+										}
+									]
+								},
+								"description": "# Call Overview:\n\n- Creates a custom (i.e. tenant) data type\n- `:CONTAINER_ID` is a reference to either tenant or global objects within the schema registry\n- Body of the call contains the details on what to create\n    \n\n## Body Analysis:\n\n| **Required Values** | **Description** |\n| --- | --- |\n| `title` | The name of the data type you wish to create within the schema registry. Note the name MUST BE UNIQUE. |\n| `description` | A short description about the purpose of the data type |\n| `type` | Always an object |\n| `properties: {}` | Contains the fields that you wish to add to your data type |\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/cf401c92-ebec-476b-a172-271e01af6abc/aW1hZ2UucG5n\" width=\"732\" height=\"283\">\n\n## Response Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `$id` | JSON Schema standard identifier in the form of a URI used for all XDM resources |\n| `meta:altId` | REST friendly version of the $id expressed in dot notation |\n\n---\n\n# Lab Task:\n\n1. Click `Send` to execute the call\n2. Copy the `$meta:altId` from your POST call response\n3. Navigate to the collection folder for Lab 01 - The Basics and select `Variables` from the top nav\n4. Paste the value into `Current Value` and save the collection variables\n    \n\n<img src=\"https://content.pstmn.io/224efa00-e8b0-4d8a-bfc4-afee7352e40d/aW1hZ2UucG5n\" width=\"1214\" height=\"368\">\n\n## Key Takeaways:\n\n- This creates a new data type that can be used in any field group when building a schema\n    \n\n<img src=\"https://content.pstmn.io/c6dff091-f3eb-45cb-8de0-961d71a81699/aW1hZ2UucG5n\" width=\"1047\" height=\"368\">"
+							},
+							"response": []
+						},
+						{
+							"name": "Step 2 - Create a Custom Field Group (recent order)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// var data = JSON.parse(responseBody);\r",
+											"// postman.setEnvironmentVariable(\"field_group_custom_recent_order\", data[\"$id\"]);\r",
+											"\r",
+											"//   ^\r",
+											"//   |\r",
+											"//   |\r",
+											"//   L---  Hey there clever person, you're not supposed to know about this yet!\r",
+											"//                                                 (we'll visit this in Lab 02)\r",
+											"//\r",
+											"//\r",
+											"//  For now, in this lab, please \"copy and paste\" the ID into the collection\r",
+											"//  variable area/table.\r",
+											"//\r",
+											"//\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token provided after authorization in the format \"Bearer {ACCESS_TOKEN}\"",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "Your specific API key for your unique Platform configuration ({API_KEY})",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "Unique Identifier for your IMS Organization ({IMS_ORG})",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"{{lab_number}}: FG Recent Order\",\r\n    \"description\": \"{{lab_number}}: FG Recent Order\",\r\n    \"type\": \"object\",\r\n    \"meta:intendedToExtend\": [\r\n        \"https://ns.adobe.com/xdm/context/profile\"\r\n    ],\r\n    \"allOf\": [\r\n        {\r\n            \"$ref\": \"#/definitions/customFields\"\r\n        }\r\n    ],\r\n    \"definitions\": {\r\n        \"customFields\": {\r\n            \"properties\": {\r\n                \"{{TENANT_ID}}\": {\r\n                    \"type\": \"object\",\r\n                    \"properties\": {\r\n                        \"orderID\": {\r\n                            \"title\": \"Order ID\",\r\n                            \"description\": \"\",\r\n                            \"type\": \"string\"\r\n                        },\r\n                        \"orderDetails\": {\r\n                            \"$ref\": \"{{--- ADD YOUR CUSTOM DATA TYPE VARIABLE ---}}\"\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/:CONTAINER_ID/mixins/",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										":CONTAINER_ID",
+										"mixins",
+										""
+									],
+									"variable": [
+										{
+											"key": "CONTAINER_ID",
+											"value": "tenant"
+										}
+									]
+								},
+								"description": "# Call Overview:\n\n- Creates a custom field group with the schema registry\n- Note the use again of the `:CONTAINER_ID` in the call's URL. Since we are creating a custom field group this will be set to `tenant`\n- Utilizes the POST method\n    \n\n## Body Analysis:\n\n| **Required Values** | **Description** |\n| --- | --- |\n| `title` | The name of the field group you wish to create within the schema registry. Note the name MUST BE UNIQUE. |\n| `description` | A short description about the purpose of the field group |\n| `type` | Always an object |\n| `meta:intendedToExtend` | Defines what classes the field group can be used with. Classes are always referenced by their `$id` value |\n| `allOf` | Describes the resources that be included in the field group. For custom defined fields the path is always `#/defintions/customFields` |\n| `definitions.customFields...` | This is the default JSON schema structure required to create custom field groups. It must match the `allOf` from above |\n| {{`TENANT_ID`}} | This is your tenant name (i.e. unique name) that is created during the provisioning process. This ensures that any customizations made do not conflict with existing or future Adobe schema registry changes |\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/9b46f1e5-e789-46ab-b872-512f655522fd/aW1hZ2UucG5n\" width=\"711\" height=\"374\">\n\n## Response Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `$id` | JSON Schema standard identifier in the form of a URI used for all XDM resources |\n| `meta:altId` | REST friendly version of the $id expressed in dot notation |\n\n---\n\n# Lab Task:\n\n1. Add the $meta:altId from the last call to the `$ref` in the body of the existing call.    \n    `\"$ref\": \"{{--- ADD YOUR CUSTOM DATA TYPE VARIABLE ---}}\"`\n3. Save the call and click `Send` to execute the call\n4. Copy the $meta:altId from your POST call response\n5. Navigate to the collection folder for Lab 01 - The Basics and select Variables from the top nav\n6. Paste the value into `Current Value` and save the collection variables\n    \n\n<img src=\"https://content.pstmn.io/0b3bf26a-600f-4690-8925-b2d4383574a4/aW1hZ2UucG5n\" width=\"1221\" height=\"364\">\n\n## Key Takeaways:\n\n- This creates a new field group (mixin) that can be used in a schema"
+							},
+							"response": []
+						},
+						{
+							"name": "Step 3 - Get XDM Standard Field Groups",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"type": "text"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"type": "text"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/vnd.adobe.xed-id+json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/:CONTAINER_ID/mixins",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										":CONTAINER_ID",
+										"mixins"
+									],
+									"variable": [
+										{
+											"key": "CONTAINER_ID",
+											"value": "global"
+										}
+									]
+								},
+								"description": "# Call Overview:\n\n- Displays a list of all field groups in the schema registry based on the global or tenant container\n- Uses the GET method\n    \n\n## Container_ID Defintion:\n\n| **Type** | **Description** |\n| --- | --- |\n| `global` | shows \"Out-of-the-box\" Adobe built field groups |\n| `tenant` | shows client specific/custom built field groups |\n\n## Accept Header Details:\n\n| **Header** | **Description** |\n| --- | --- |\n| `application/vnd.adobe.xed-id+json` | Returns a short summary of each resource. This is the recommended header for listing resources. (Limit: 300) |\n| `application/vnd.adobe.xed+json` | Returns full JSON field group for each resource, with original `$ref` and `allOf` included. (Limit: 300) |\n\nMore info on Accept Headers can be found here: [https://experienceleague.adobe.com/docs/experience-platform/xdm/api/getting-started.html?lang=en#accept](https://experienceleague.adobe.com/docs/experience-platform/xdm/api/getting-started.html?lang=en#accept)\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/645bc96a-1193-4d14-af1b-6b78263a74f1/aW1hZ2UucG5n\" width=\"676\" height=\"585\">\n\n## Response Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `$id` | primary ID needed in schema creation |\n| `meta:altId` | sometimes used in other places (but _usually_ not as useful as `$id` ) |\n\n---\n\n# Lab Steps:\n\n1. Execute the call by clicking the `Send` button\n2. Search the response for two field groups using the following names:\n    1. `Personal Contact Details`\n    2. `Demographic Details`\n3. Copy the `meta:altID` for each field group and save it in its respective variable in the collection folder for Lab 01 - The Basics\n4. Paste the value into Current Value and be sure to save the collection variables when done\n    \n\n<img src=\"https://content.pstmn.io/e33b9bf7-82d8-4b94-afcd-d5f4a043297f/aW1hZ2UucG5n\" width=\"1214\" height=\"357\">\n\n## Key Takeaways:\n\n- These IDs can be used to contruct a schema"
+							},
+							"response": []
+						},
+						{
+							"name": "Step 4 - Create CRM Profile Schema",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// var data = JSON.parse(responseBody);\r",
+											"// pm.collectionVariables.set(\"practice_schema_meta_altid\", data[\"meta:altId\"]);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/\r",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name\r",
+											"pm.request.headers.each(header => {\r",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {\r",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name\r",
+											"pm.request.url.query.remove(q => { \r",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {\r",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));\r",
+											"    } \r",
+											"});\r",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"type": "text"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"type": "text"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"{{lab_number}}: CRM Profile Practice\",\n    \"description\": \"{{lab_number}}: CRM Profile Practice\",\n    \"allOf\": [\n        {\n            \"$ref\": \"https://ns.adobe.com/xdm/context/profile\"\n        },\n        {\n            \"$ref\": \"{{field_group_ootb_personal_contact_details}}\"\n        },\n        {\n            \"$ref\": \"{{field_group_ootb_demographic_details}}\"\n        },\n        {\n            \"$ref\": \"{{----ADD CUSTOM FIELD GROUP VARIABLE HERE----}}\"\n        }\n    ]\n}"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/tenant/schemas",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										"tenant",
+										"schemas"
+									]
+								},
+								"description": "# Call Overview:\n\n- Creates a schema using references to both the class type and field groups\n- Use the POST method\n    \n\n## Body Analysis:\n\n| **Required Values** | **Description** |\n| --- | --- |\n| `title` | The name of the field group you wish to create within the schema registry. Note the name MUST BE UNIQUE. |\n| `description` | A short description about the purpose of the field group |\n| `allOf` | Describes the resources that be included in the schema. For schemas this requires both the class and field groups. |\n| `$ref` | Reference location to the class or field group to be included in the schema utilizing either that resources `$id` or `meta:altId` |\n\n## Schema Components:\n\n<img src=\"https://content.pstmn.io/79b70d78-ca35-4b5b-90c5-c52924b006f1/aW1hZ2UucG5n\" width=\"1519\" height=\"788\">\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/f6930dac-154a-4b43-aff3-76967d137a0e/aW1hZ2UucG5n\" width=\"1574\" height=\"431\">\n\n## Response Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `$id` | primary ID needed in schema creation |\n| `meta:altId` | sometimes used in other places (_usually_ not as useful as `$id` ) |\n\n---\n\n# Lab Tasks:\n\n1. Fill in the `$ref` path for the custom field group you created in Step 2.\n<img src=\"https://content.pstmn.io/3d53ecde-389a-489d-b91e-ecbc6f91fa24/aW1hZ2UucG5n\" width=\"542\" height=\"333\">\n\n1. Inside the brackets add the name of the variable: `field_group_custom_recent_order`\n<img src=\"https://content.pstmn.io/58ffa7b8-5521-415d-b06d-21b73b8c8c1c/aW1hZ2UucG5n\" width=\"521\" height=\"340\">\n\n1. Click the `Send` button to execute\n2. You should see a successful response (i.e 201 Created) that looks like this\n<img src=\"https://content.pstmn.io/d62cb8aa-40e9-4785-b1a5-7dd47e127a31/aW1hZ2UucG5n\" width=\"819\" height=\"633\">\n\n## Key Takeaways:\n\n- This creates a new schema within the XDM registry"
+							},
+							"response": []
+						},
+						{
+							"name": "Step 5 - Get CRM Profile Schema",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"//Check to ensure the collection variable is set\r",
+											"if (pm.collectionVariables.get(\"practice_schema_meta_altid\") == \"\")\r",
+											"{\r",
+											"     throw new Error(\"You forgot to update your Lab 01 collection with the previous steps schema meta:altId\")\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"type": "text"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"type": "text"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"type": "text"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/vnd.adobe.xdm+json; version=1",
+										"type": "text",
+										"description": "application/vnd.adobe.xdm+json; version=1"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/tenant/schemas/:SCHEMA_ID",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										"tenant",
+										"schemas",
+										":SCHEMA_ID"
+									],
+									"variable": [
+										{
+											"key": "SCHEMA_ID",
+											"value": "{{practice_schema_meta_altid}}",
+											"description": "{{practice_schema_meta_altid}}"
+										}
+									]
+								},
+								"description": "# Call Overview:\n\n- Confirms the recently created schema\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/0d94d24b-9dc6-48ae-b4df-13ae0004a684/aW1hZ2UucG5n\" width=\"1282\" height=\"703\">\n\n---\n\n# Lab Tasks:\n\n1. Confirm the Schema has deployed"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "-- Reset Practice --",
+					"item": [
+						{
+							"name": "Delete Schema (crm profile)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token which can be copied from your Experience Platform integration, prefixed with \"Bearer \". For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "The IMS Organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview](https://adobe.com/go/sandbox-overview-en) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/tenant/schemas/{{practice_schema_meta_altid}}",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										"tenant",
+										"schemas",
+										"{{practice_schema_meta_altid}}"
+									]
+								},
+								"description": "## Call Overview:\n\n- Remove an existing schema hrough a DELETE request to the `$meta:altid` of the field group being removed.\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/3b6dc8b9-2bc3-4905-a2e9-2c6ceab5b30b/aW1hZ2UucG5n\" alt=\"(notice%20204%20response)\" width=\"1299\" height=\"325\">\n\n---\n\n## Lab Tasks:\n\n- A successful deletion returns an empty response body and HTTP status 204 (No Content).\n- Notice the pattern/order here -- top level objects first then going granular"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Custom Field Group (recent order)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token which can be copied from your Experience Platform integration, prefixed with \"Bearer \". For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "The IMS Organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview](https://adobe.com/go/sandbox-overview-en) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/tenant/fieldgroups/{{field_group_custom_recent_order}}",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										"tenant",
+										"fieldgroups",
+										"{{field_group_custom_recent_order}}"
+									]
+								},
+								"description": "## Call Overview:\n\n- Remove an existing field group through a DELETE request to the `$meta:altid` of the field group being removed.\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/3b6dc8b9-2bc3-4905-a2e9-2c6ceab5b30b/aW1hZ2UucG5n\" alt=\"(notice%20204%20response)\" width=\"1299\" height=\"325\">\n\n---\n\n## Lab Tasks:\n\n- A successful deletion returns an empty response body and HTTP status 204 (No Content)."
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Custom Data Type (recent order details)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token which can be copied from your Experience Platform integration, prefixed with \"Bearer \". For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "The IMS Organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview](https://adobe.com/go/sandbox-overview-en) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/tenant/datatypes/{{data_type_custom_recent_order_details}}",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										"tenant",
+										"datatypes",
+										"{{data_type_custom_recent_order_details}}"
+									]
+								},
+								"description": "## Call Overview:\n\n- Remove an existing data type through a DELETE request to the `$meta:altid` of the field group being removed.\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/3b6dc8b9-2bc3-4905-a2e9-2c6ceab5b30b/aW1hZ2UucG5n\" alt=\"(notice%20204%20response)\" width=\"1299\" height=\"325\">\n\n---\n\n## Lab Tasks:\n\n- A successful deletion returns an empty response body and HTTP status 204 (No Content)."
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// getting the current YYYY-MM-DD and casting it into my Environment file",
+					"var moment     = require('moment');",
+					"var fullDate   = moment().format((\"(YYYY-MM-DD)\"));",
+					"var labPrefix  = pm.collectionVariables.get(\"lab_number_val\") + \" \" + fullDate;",
+					"pm.collectionVariables.set(\"lab_number\", labPrefix);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "lab_number",
+			"value": "Lab 01",
+			"type": "string"
+		},
+		{
+			"key": "lab_number_val",
+			"value": "Lab 01",
+			"type": "string"
+		},
+		{
+			"key": "custom_schema_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "field_group_ootb_personal_contact_details",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "field_group_ootb_demographic_details",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "field_group_custom_recent_order",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "data_type_custom_recent_order_details",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "practice_schema_meta_altid",
+			"value": ""
+		}
+	]
+}

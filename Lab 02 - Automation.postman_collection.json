@@ -1,0 +1,2289 @@
+{
+	"info": {
+		"_postman_id": "4b3b2128-a04e-4fa0-aa60-ab13b819fffa",
+		"name": "Lab 02 - Automation",
+		"description": "## Collection Notes:\n\n- Now we go deeper into the API calls and build scripting to parse, capture amd re-use components in suqsequent calls\n    \n\n## Collection Calls:\n\n<img src=\"https://content.pstmn.io/921f6bf4-d342-4369-9de5-4f7143471287/aW1hZ2UucG5n\" width=\"1114\" height=\"300\">",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10097106"
+	},
+	"item": [
+		{
+			"name": "2.1 - Postman Variables",
+			"item": [
+				{
+					"name": "Step 1 - Create a Custom Field Group (extract ids) Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"/** Begin Adobe-provided Pre-Request Scripts **/",
+									"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+									"pm.request.headers.each(header => {",
+									"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+									"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+									"    }",
+									"});",
+									"",
+									"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+									"pm.request.url.query.remove(q => { ",
+									"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+									"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+									"    } ",
+									"});",
+									"/** End Adobe-provided Pre-Request Scripts **/"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);\r",
+									"\r",
+									"postman.setEnvironmentVariable(\"FG_CUSTOM_LATEST_ACTIONS_ID\", data[\"$id\"]);\r",
+									"postman.setEnvironmentVariable(\"FG_CUSTOM_LATEST_ACTIONS_META_ALTID\", data[\"meta:altId\"]);\r",
+									"\r",
+									"pm.collectionVariables.set(\"collection_field_group_custom_latest_actions_id\", data[\"$id\"]);\r",
+									"pm.collectionVariables.set(\"collection_field_group_custom_latest_actions_meta_altid\", data[\"meta:altId\"]);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"description": "The access token provided after authorization in the format \"Bearer {ACCESS_TOKEN}\"",
+								"type": "string"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{API_KEY}}",
+								"description": "Your specific API key for your unique Platform configuration ({API_KEY})",
+								"type": "string"
+							},
+							{
+								"key": "x-gw-ims-org-id",
+								"value": "{{IMS_ORG}}",
+								"description": "Unique Identifier for your IMS Organization ({IMS_ORG})",
+								"type": "string"
+							},
+							{
+								"key": "x-sandbox-name",
+								"value": "{{SANDBOX_NAME}}",
+								"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+								"type": "string"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"object\",\r\n    \"title\": \"{{lab_number}}: Latest Actions\",\r\n    \"description\": \"{{lab_number}}: Latest Actions\",\r\n    \"meta:intendedToExtend\": [\r\n        \"https://ns.adobe.com/xdm/context/profile\"\r\n    ],\r\n    \"allOf\": [\r\n        {\r\n            \"$ref\": \"#/definitions/customFields\"\r\n        }\r\n    ],\r\n    \"meta:containerId\": \"tenant\",\r\n    \"definitions\": {\r\n        \"customFields\": {\r\n            \"type\": \"object\",\r\n            \"properties\": {\r\n                \"{{TENANT_ID}}\": {\r\n                    \"type\": \"object\",\r\n                    \"properties\": {\r\n                        \"latestActions\": {\r\n                            \"title\": \"Latest Actions\",\r\n                            \"description\": \"\",\r\n                            \"type\": \"object\",\r\n                            \"isRequired\": false,\r\n                            \"required\": [],\r\n                            \"properties\": {\r\n                                \"actionName\": {\r\n                                    \"title\": \"Action Name\",\r\n                                    \"description\": \"\",\r\n                                    \"type\": \"string\",\r\n                                    \"required\": [],\r\n                                    \"meta:xdmType\": \"string\"\r\n                                },\r\n                                \"actionType\": {\r\n                                    \"title\": \"Action Type\",\r\n                                    \"description\": \"\",\r\n                                    \"type\": \"string\",\r\n                                    \"required\": [],\r\n                                    \"meta:xdmType\": \"string\"\r\n                                },\r\n                                \"actionTimestamp\": {\r\n                                    \"title\": \"Action Timestamp\",\r\n                                    \"description\": \"\",\r\n                                    \"type\": \"string\",\r\n                                    \"required\": [],\r\n                                    \"format\": \"date-time\",\r\n                                    \"meta:xdmType\": \"date-time\"\r\n                                },\r\n                                \"actionChannel\": {\r\n                                    \"title\": \"Action Channel\",\r\n                                    \"description\": \"\",\r\n                                    \"type\": \"string\",\r\n                                    \"required\": [],\r\n                                    \"meta:xdmType\": \"string\"\r\n                                },\r\n                                \"actionTransactionAmount\": {\r\n                                    \"title\": \"Action Amount\",\r\n                                    \"description\": \"\",\r\n                                    \"type\": \"number\",\r\n                                    \"required\": [],\r\n                                    \"meta:xdmType\": \"number\"\r\n                                },\r\n                                \"actionProduct\": {\r\n                                    \"title\": \"Action Product\",\r\n                                    \"description\": \"\",\r\n                                    \"type\": \"string\",\r\n                                    \"required\": [],\r\n                                    \"meta:xdmType\": \"string\"\r\n                                }\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "https://platform.adobe.io/data/foundation/schemaregistry/tenant/mixins/",
+							"protocol": "https",
+							"host": [
+								"platform",
+								"adobe",
+								"io"
+							],
+							"path": [
+								"data",
+								"foundation",
+								"schemaregistry",
+								"tenant",
+								"mixins",
+								""
+							]
+						},
+						"description": "## Call Objective:\n\n- The BODY is the design of the field group\n    \n\n## Lab Task:\n\n- Instead of manually copying the response `$id` and other such values from the returned payload, we'll be using scripting to collect/set/extract that information\n- Please navigate to the Tests tab within the call and look that the JS code\n    \n\n## Tests Analysis:\n\n| **code** | **comments** |\n| --- | --- |\n| `var data = JSON.parse(responseBody);` | takes the response Body and casts it into a JSON object which can be used to extract/loop through data |\n| `postman.setEnvironmentVariable(\"X\",Y)` | Within the current Environment file, this sets the variable \"X\" to the value of Y (NOTE: all vars are strings). Later, X could be ref/used as `{{X}}` |\n| `pm.collectionVariables.set(\"A\", data[\"$id\"]);` | Within the current Collection variables, this sets the variable \"A\" to the value of `data[\"$id\"]` (NOTE: it's assumed that `$id` exists in the response payload -- see first code example for more info above) |\n\n## Variable Formatting:\n\n- Consistent variable labeling/syntax is a best practice that should be adhered to\n- In our lab, we'll be using this construction/pattern:\n    - FORMULA: `[asset]_[scope]_[name]_[specific_id]`\n    - EXAMPLE: FG_CUSTOM_LATEST_ACTIONS_META_ALTID\n- `scope` (whether or not the asset is global or custom) is optional-- doesn't apply to assets that are clearly custom.\n- In the end, use whatever you'd like, but try to be consistent\n    \n\n## Variable Location:\n\n- Typically, variables would be set either (1) Collection or (2) Environment\n- Personally, I prefer to throw everything into Environment (for simplicity sake and higher precedence/inheritance)\n- Our lab will use both locations to show flexibility\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/f6930dac-154a-4b43-aff3-76967d137a0e/aW1hZ2UucG5n\" width=\"1574\" height=\"431\">\n\n## Response Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `$id` | primary ID needed in schema creation |\n| `meta:altId` | sometimes used in other places (_usually_ not as useful as `$id` ) |\n| `meta:intendedToExtend` | this is where (in terms of behavior) this field group can be used |\n| other values in JSON body | restating what was just sent/generated as a field group |\n\n## Key Takeaways:\n\n- This creates a new field group (mixin) that can be used in a schema\n    \n\n## API Library Location:\n\n- Schema Registry API\n    - Field groups\n        - Create a custom field group\n\n[https://learning.postman.com/docs/writing-scripts/script-references/variables-list/](https://learning.postman.com/docs/writing-scripts/script-references/variables-list/)\n\n## Postman Variable Scopes & Precedence:\n\n<img src=\"https://content.pstmn.io/3bab7636-8e8b-491a-8889-3123915d1d55/aW1hZ2UucG5n\" width=\"791\" height=\"582\">\n\n[https://learning.postman.com/docs/sending-requests/variables/](https://learning.postman.com/docs/sending-requests/variables/)\n\n[https://blog.postman.com/10-tips-for-working-with-postman-variables/](https://blog.postman.com/10-tips-for-working-with-postman-variables/)"
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2 - Get a Connection Spec ID (loop through results/items)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"/** Begin Adobe-provided Pre-Request Scripts **/\r",
+									"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name\r",
+									"pm.request.headers.each(header => {\r",
+									"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {\r",
+									"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name\r",
+									"pm.request.url.query.remove(q => { \r",
+									"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {\r",
+									"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));\r",
+									"    } \r",
+									"});\r",
+									"/** End Adobe-provided Pre-Request Scripts **/"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data         = JSON.parse(responseBody);\r",
+									"var elementCount = data.items.length;\r",
+									"for (var counter = 0; counter < elementCount; counter++) {\r",
+									"    if (data.items[counter][\"attributes\"][\"isSource\"] == true ) {\r",
+									"        postman.setEnvironmentVariable(\"CONNECTION_SOURCE_SPEC_ID_AWS_S3\", data.items[counter][\"id\"]);\r",
+									"        console.log(pm.environment.get(\"CONNECTION_SOURCE_SPEC_ID_AWS_S3\"));\r",
+									"    };\r",
+									"    if (data.items[counter][\"attributes\"][\"isDestination\"] == true ) {\r",
+									"        postman.setEnvironmentVariable(\"CONNECTION_DESTINATION_SPEC_ID_AWS_S3\", data.items[counter][\"id\"]);\r",
+									"        console.log(pm.environment.get(\"CONNECTION_DESTINATION_SPEC_ID_AWS_S3\"));\r",
+									"    };\r",
+									"};\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{API_KEY}}",
+								"type": "text"
+							},
+							{
+								"key": "x-gw-ims-org-id",
+								"value": "{{IMS_ORG}}",
+								"type": "text"
+							},
+							{
+								"key": "x-sandbox-name",
+								"value": "{{SANDBOX_NAME}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://platform.adobe.io/data/foundation/flowservice/connectionSpecs?property=name==\"amazon-s3\"'",
+							"protocol": "https",
+							"host": [
+								"platform",
+								"adobe",
+								"io"
+							],
+							"path": [
+								"data",
+								"foundation",
+								"flowservice",
+								"connectionSpecs"
+							],
+							"query": [
+								{
+									"key": "property",
+									"value": "name==\"amazon-s3\"'"
+								}
+							]
+						},
+						"description": "## Call Objective:\n\n- Get a list of all the different \"amazon-s3\" connector spec IDs for later operations\n    \n\n## Lab Task:\n\n- This JS code, within Tests, is similar to the previous example\n- Instead of hard coding the spec IDs (which is an option), this will loop through and find the correct/matching spec ID as it relates to the s3 bucket being a (1) Source into AEP or (2) Destination.\n    \n\n## Tests Analysis:\n\n| **code blocks** | **comments** |\n| --- | --- |\n| `var data = JSON.parse(responseBody);` | takes the response Body and casts it into a JSON object which can be used to extract/loop through data |\n| `var elementCount = data.items.length;` | Getting the count of elements within \"items\" array in response (in other API calls, it could be \"results\" instead of items) |\n| `for (var counter = 0; counter < elementCount; counter++)` | This will loop through all items (individually) until it reaches the end of the count |\n| `if (data.items[counter][\"attributes\"][\"isSource\"] == true )` | This looks for a particular value in the item. In this case it's {\"attributes\":{\"isSource\": true}} |\n| `postman.setEnvironmentVariable(\"connection_source_spec_id_aws_s3\", data.items[counter][\"id\"]);` | Like what was seen earlier, this sets the variable |\n| `console.log(pm.environment.get(\"connection_source_spec_id_aws_s3\"));` | This prints the extracted value into the Postman console |\n\n## Scripting Notes:\n\n- Everything is in JS\n- Certain code/commands tie into Postman Runner (which we'll see very soon)\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/d3a3b3f6-0024-4b75-b7e5-64ea5a190a42/aW1hZ2UucG5n\" width=\"1023\" height=\"795\">\n\n## Response Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `id` | spec ID (needed for source + target connections) |\n| `name` | friendly name of the connection spec |\n| `authSpec` | specific settings on the connection |\n| `attributes` | attributes/metadata about the connection |\n\n## Key Takeaways:\n\n- This API shows the spec IDs along with the other parameters/settings needed for deploying connections (for both source and destination)\n    \n\n## API Library Location:\n\n- Flow Service API\n    - Connection specs\n        - List connection specifications"
+					},
+					"response": []
+				}
+			],
+			"description": "## Lab Section:\n\nA few ad hoc calls showing some JS/scripting examples within Postman\n\n## Section Listing:\n\n<img src=\"https://content.pstmn.io/4ef97fc1-ef42-452e-a44a-16e01c2616b5/aW1hZ2UucG5n\" width=\"787\" height=\"143\">"
+		},
+		{
+			"name": "2.2 - Classroom Practice & Lessons (Using Postman Runner)",
+			"item": [
+				{
+					"name": "1 - Identity Namespace",
+					"item": [
+						{
+							"name": "Step 1 - Create Custom Namespace (CRM ID)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token which can be copied from your Experience Platform integration, prefixed with \"Bearer \".  For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "The Organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "Identifies the Adobe Experience Platform sandbox to use. Default sandbox is 'prod'",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"crmId\",\r\n    \"code\": \"crmId\",\r\n    \"idType\": \"CROSS_DEVICE\",\r\n    \"description\": \"CRM ID\"\r\n}"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/core/idnamespace/identities",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"core",
+										"idnamespace",
+										"identities"
+									]
+								},
+								"description": "## Call Objective:\n\n- The BODY is the design of a new namespace\n    \n\n## Lab Task:\n\n- Make sure 201 response occurs\n- Make note of the `code` used. Later this is needed for declaring an identity descriptors in the schema\n- Notice that `idType` is critical for backend stitching (UIS graph)\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/ef758da8-9ff8-4901-9367-d4f45a726043/aW1hZ2UucG5n\" width=\"715\" height=\"342\">\n\n## Body Analysis:\n\n| **idType** | **comments** | **Unified Identity Service (UIS) Stitching** |\n| --- | --- | --- |\n| `CROSS_DEVICE` | Cross-device IDs identify an individual and usually tie other IDs together | YES |\n| `EMAIL` | Email addresses are often associated with a single person and therefore can be used to identify that person across different channels | YES |\n| `PHONE` | Phone numbers are often associated with a single person and therefore can be used to identify that person across different channels | YES |\n| `COOKIE` | Cookie IDs identify web browsers | YES |\n| `DEVICE` | Device IDs identify hardware devices | YES |\n| ~~Non-people~~  <br>`NON_PEOPLE` | Non-people IDs are used for storing identifiers that require namespaces _**but are not connected to a person cluster**_. For example, a product SKU, data related to products, organizations, or stores. | NO -- but it does match/connect keys together (very much like SAINT or matchtables) |\n\n## Key Takeaways:\n\n- This creates a new field group (mixin) that can be used in a schema\n    \n\n## Notice:\n\n- Custom namespaces created in `prod` are _**NOT allowed to be deleted/reset**_\n- Custom namespaces created in `sandboxes` (not `prod`) can be deleted only upon sandbox reset\n- Attempt to re-create an already submitted namespace will result in a 409 response (nothing changes/breaks in the backend)\n    \n\n## API Library Location:\n\n- Identity Service\n    - Identity Namespaces\n        - Create new identity namespace\n\n## Documentation Links:\n\n- [https://experienceleague.adobe.com/docs/experience-platform/identity/namespaces.html](https://experienceleague.adobe.com/docs/experience-platform/identity/namespaces.html)\n- [https://experienceleague.adobe.com/docs/experience-platform/identity/api/create-custom-namespace.html?lang=en](https://experienceleague.adobe.com/docs/experience-platform/identity/api/create-custom-namespace.html?lang=en)\n- [https://developer.adobe.com/experience-platform-apis/references/identity-service/#tag/Identity-Namespace/operation/retrieveIdentityNamespace](https://developer.adobe.com/experience-platform-apis/references/identity-service/#tag/Identity-Namespace/operation/retrieveIdentityNamespace)"
+							},
+							"response": []
+						},
+						{
+							"name": "Step 2 - Create Custom Namespace (Legacy ID)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token which can be copied from your Experience Platform integration, prefixed with \"Bearer \".  For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "The Organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "Identifies the Adobe Experience Platform sandbox to use. Default sandbox is 'prod'",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"legacyId\",\r\n    \"code\": \"legacyId\",\r\n    \"idType\": \"CROSS_DEVICE\",\r\n    \"description\": \"Legacy ID\"\r\n}"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/core/idnamespace/identities",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"core",
+										"idnamespace",
+										"identities"
+									]
+								},
+								"description": "## Call Objective:\n\n- The BODY is the design of a new namespace\n    \n\n## Lab Task:\n\n- Make sure 201 response occurs\n- Make note of the `code` used. Later this is needed for declaring an identity descriptors in the schema\n- Notice that `idType` is critical for backend stitching (UIS graph)\n    \n\n## Response Example (409):\n\n<img src=\"https://content.pstmn.io/f4d855ae-e6e3-49f9-a559-21d27cdff82c/aW1hZ2UucG5n\" width=\"997\" height=\"320\">\n\n## Body Analysis:\n\n| **idType** | **comments** | **Unified Identity Service (UIS) Stitching** |\n| --- | --- | --- |\n| `CROSS_DEVICE` | Cross-device IDs identify an individual and usually tie other IDs together | YES |\n| `EMAIL` | Email addresses are often associated with a single person and therefore can be used to identify that person across different channels | YES |\n| `PHONE` | Phone numbers are often associated with a single person and therefore can be used to identify that person across different channels | YES |\n| `COOKIE` | Cookie IDs identify web browsers | YES |\n| `DEVICE` | Device IDs identify hardware devices | YES |\n| ~~Non-people~~  <br>`NON_PEOPLE` | Non-people IDs are used for storing identifiers that require namespaces _**but are not connected to a person cluster**_. For example, a product SKU, data related to products, organizations, or stores. | NO -- but it does match/connect keys together (very much like SAINT or matchtables) |\n\n## Key Takeaways:\n\n- This creates a new field group (mixin) that can be used in a schema\n    \n\n## Notice:\n\n- Custom namespaces created in `prod` are _**NOT allowed to be deleted/reset**_\n- Custom namespaces created in `sandboxes` (not `prod`) can be deleted only upon sandbox reset\n- Attempt to re-create an already submitted namespace will result in a 409 response (nothing changes/breaks in the backend)\n    \n\n## API Library Location:\n\n- Identity Service\n    - Identity Namespaces\n        - Create new identity namespace\n\n## Documentation Links:\n\n- [https://experienceleague.adobe.com/docs/experience-platform/identity/namespaces.html](https://experienceleague.adobe.com/docs/experience-platform/identity/namespaces.html)\n- [https://experienceleague.adobe.com/docs/experience-platform/identity/api/create-custom-namespace.html?lang=en](https://experienceleague.adobe.com/docs/experience-platform/identity/api/create-custom-namespace.html?lang=en)\n- [https://developer.adobe.com/experience-platform-apis/references/identity-service/#tag/Identity-Namespace/operation/retrieveIdentityNamespace](https://developer.adobe.com/experience-platform-apis/references/identity-service/#tag/Identity-Namespace/operation/retrieveIdentityNamespace)"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "2 - Field Groups",
+					"item": [
+						{
+							"name": "Step 1 - Create Field Group (Customer Identities)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"// postman.setEnvironmentVariable(\"FG_CUSTOM_CUSTOMER_IDS_ID\", data[\"$id\"]);\r",
+											"// postman.setEnvironmentVariable(\"FG_CUSTOM_CUSTOMER_IDS_META_ALTID\", data[\"meta:altId\"]);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token provided after authorization in the format \"Bearer {ACCESS_TOKEN}\"",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "Your specific API key for your unique Platform configuration ({API_KEY})",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "Unique Identifier for your IMS Organization ({IMS_ORG})",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"object\",\r\n    \"title\": \"{{lab_number}}: Customer Identities\",\r\n    \"description\": \"{{lab_number}}: Customer Identities\",\r\n    \"meta:intendedToExtend\": [\r\n        \"https://ns.adobe.com/xdm/context/profile\"\r\n    ],\r\n    \"allOf\": [\r\n        {\r\n            \"$ref\": \"#/definitions/customFields\"\r\n        }\r\n    ],\r\n    \"meta:containerId\": \"tenant\",\r\n    \"definitions\": {\r\n        \"customFields\": {\r\n            \"type\": \"object\",\r\n            \"properties\": {\r\n                \"{{TENANT_ID}}\": {\r\n                    \"type\": \"object\",\r\n                    \"properties\": {\r\n                        \"idDetails\": {\r\n                            \"title\": \"Customer Identities\",\r\n                            \"description\": \"\",\r\n                            \"type\": \"object\",\r\n                            \"isRequired\": false,\r\n                            \"required\": [],\r\n                            \"properties\": {\r\n                                \"crmId\": {\r\n                                    \"title\": \"CRM ID\",\r\n                                    \"description\": \"This is the user ID used in the backend\",\r\n                                    \"type\": \"string\",\r\n                                    \"required\": [],\r\n                                    \"meta:xdmType\": \"string\"\r\n                                },\r\n                                \"legacyId\": {\r\n                                    \"title\": \"Legacy ID\",\r\n                                    \"description\": \"This is the REALLY OLD user ID used in the backend\",\r\n                                    \"type\": \"string\",\r\n                                    \"required\": [],\r\n                                    \"meta:xdmType\": \"string\"\r\n                                },\r\n                                \"email\": {\r\n                                    \"title\": \"Email ID\",\r\n                                    \"description\": \"This is the users email\",\r\n                                    \"type\": \"string\",\r\n                                    \"required\": [],\r\n                                    \"meta:xdmType\": \"string\"\r\n                                }\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/:CONTAINER_ID/mixins/",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										":CONTAINER_ID",
+										"mixins",
+										""
+									],
+									"variable": [
+										{
+											"key": "CONTAINER_ID",
+											"value": "tenant"
+										}
+									]
+								},
+								"description": "## Call Objective:\n\n- Creates a custom field group with the schema registry\n    \n\n## Lab Task:\n\n- Goto the \"Tests\" tab\n- Capture the `$id` and `meta:altId` values of this Field Group (FG)\n    \n\n## Body Analysis\n\n| **Required Values** | **Comments** |\n| --- | --- |\n| `title` | The name of the field group you wish to create within the schema registry. Note the name MUST BE UNIQUE. |\n| `description` | A short description about the purpose of the field group |\n| `type` | Always an object |\n| `meta:intendedToExtend` | Defines what classes the field group can be used with. Classes are always referenced by their `$id` value |\n| `allOf` | A list of resources whose properties are to be inheritied by the new class |\n| `definitions...` | This contains the fields that make up the field group. Note the use of the `$ref` lists the path to the data type we created |\n| `{{TENANT_ID}}` | This is your tenant name (i.e. unique name) that is created during the provisioning process. This ensures that any customizations made are unique to only your IMS Org |\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/97da647e-169d-45f0-aa15-a986d52307cb/aW1hZ2UucG5n\" width=\"1263\" height=\"391\">\n\n## Response Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `$id` | JSON Schema standard identifier in the form of a URI used for all XDM resources |\n| `meta:altId` | REST friendly version of the $id expressed in dot notation |\n| `definitions...` | This contains the fields that make up the field group. Note the use of the `$ref` lists the path to the data type we created |\n| `meta:intendedToExtend` | Defines where this field group is allowed |\n| `allOf` | A list of resources whose properties are to be inherited by the new class. |\n\n## Key Takeaways:\n\n- This creates a new field group (mixin) that can be used in a schema\n    \n\n## API Library Location:\n\n- Schema Registry API\n    - Field groups\n        - Create a custom field group\n\n## Building Pattern:\n\n<img src=\"https://content.pstmn.io/4aad3e15-e9cc-41a1-9a35-5758df980308/aW1hZ2UucG5n\" alt=\"\" height=\"450\" width=\"800\">"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "3 - Schema, Descriptors, Dataset (CRM Practice)",
+					"item": [
+						{
+							"name": "Step 1 - Create a new schema - CRM",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token provided after authorization in the format \"Bearer {ACCESS_TOKEN}\"",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "Your specific API key for your unique Platform configuration ({API_KEY})",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "Unique Identifier for your IMS Organization ({IMS_ORG})",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"object\",\r\n    \"title\": \"{{lab_number}}: CRM Practice\",\r\n    \"description\": \"{{lab_number}}: CRM Practice\",\r\n    \"allOf\": [\r\n        {\r\n            \"$ref\": \"https://ns.adobe.com/xdm/context/profile\"\r\n        },\r\n        {\r\n            \"$ref\": \"https://ns.adobe.com/xdm/context/identitymap\"\r\n        },\r\n        {\r\n            \"$ref\": \"https://ns.adobe.com/xdm/context/profile-person-details\"\r\n        },\r\n        {\r\n            \"$ref\": \"{{FG_CUSTOM_CUSTOMER_IDS_ID}}\"\r\n        }\r\n    ]\r\n}\r\n"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/tenant/schemas/",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										"tenant",
+										"schemas",
+										""
+									]
+								},
+								"description": "## Call Objective:\n\n- The BODY is the design of the schema\n    \n\n## Lab Task:\n\n- Please insert/paste the correct `$ref` values within the BODY payload\n    \n\n## Body Example:\n\n<img src=\"https://content.pstmn.io/ce6fe0d5-c820-4c83-b042-1ceb25a9f599/aW1hZ2UucG5n\" width=\"1058\" height=\"624\">\n\n## Body Analysis\n\n| **variables** | **comments** |\n| --- | --- |\n| `title` | friendly name that shows in the UI (REQUIRED) |\n| `description` | gives more context to the schema (OPTIONAL) |\n| `allOf` | this is an array with all the components (each `$ref` value) that build out the schema |\n| `$ref` | there's essentially 3 different types of values that are used here: (1) declaring the class (2) OOTB field groups and (3) Custom field groups |\n\n## Schema Components:\n\n<img src=\"https://content.pstmn.io/b5b48c09-7375-4966-b982-de31447a5d2f/aW1hZ2UucG5n\" width=\"1390\" height=\"789\">\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/f6930dac-154a-4b43-aff3-76967d137a0e/aW1hZ2UucG5n\" width=\"1574\" height=\"431\">\n\n## Response Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `$id` | primary ID needed in schema creation |\n| `meta:altId` | sometimes used in other places (_usually_ not as useful as `$id` ) |\n\n## Key Takeaways:\n\n- This creates a new field group (mixin) that can be used in a schema\n    \n\n## API Library Location:\n\n- Schema Registry API\n    - Schemas\n        - Create a custom schema\n\n## Lab Hints:\n\n`postman.setEnvironmentVariable(\"CRM_SCHEMA_ID\", data[\"$id\"]);`\n\n`postman.setEnvironmentVariable(\"CRM_SCHEMA_META_ALTID\", data[\"meta:altId\"]);`"
+							},
+							"response": []
+						},
+						{
+							"name": "Step 2 - CRM Create descriptor - crmId",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token provided after authorization in the format \"Bearer {ACCESS_TOKEN}\"",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "Your specific API key for your unique Platform configuration ({API_KEY})",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "Unique Identifier for your IMS Organization ({IMS_ORG})",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"@type\": \"xdm:descriptorIdentity\",\r\n  \"xdm:sourceSchema\": \"{{CRM_SCHEMA_ID}}\",\r\n  \"xdm:sourceVersion\": 1,\r\n  \"xdm:sourceProperty\": \"/{{TENANT_ID}}/idDetails/crmId\",\r\n  \"xdm:namespace\": \"crmId\",\r\n  \"xdm:property\": \"xdm:code\",\r\n  \"xdm:isPrimary\": true\r\n}\r\n"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/:CONTAINER_ID/descriptors",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										":CONTAINER_ID",
+										"descriptors"
+									],
+									"variable": [
+										{
+											"key": "CONTAINER_ID",
+											"value": "tenant"
+										}
+									]
+								},
+								"description": "## Call Objective:\n\n- The BODY is specifying a type of descriptor -- in this call it's defining an identity within @type\n    \n\n## Lab Task:\n\n- No action/task is necessary\n- Notice that this is repeated a few times for each identity within the schema\n    \n\n## Body Example:\n\n<img src=\"https://content.pstmn.io/07fbcd59-31fa-4a0d-a2aa-5332fb5eb0d5/aW1hZ2UucG5n\" width=\"1138\" height=\"388\">\n\n## Body Analysis\n\n| **variables** | **comments** |\n| --- | --- |\n| `xdm:sourceSchema` | which schema to operate on |\n| `xdm:sourceProperty` | JSON path location (slash notation) of data element within schema. This is the declared identity value/string |\n| `xdm:namespace` | identity namespace (in our case the name and element are the same, it doesn't need to be that way) |\n| `xdm:isPrimary` | true = single element can be primary in a schema false = all other identity elements NOTE: all identities are used/seen in the graph equally |\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/2f26d741-e1ae-438f-9305-19b93ebd58c5/aW1hZ2UucG5n\" width=\"797\" height=\"471\">\n\n## Key Takeaways:\n\n- This creates a new identity on a field within the schema.\n- No variable capture is required\n    \n\n## API Library Location:\n\n- Schema Registry API\n    - Descriptors\n        - Create a descriptor"
+							},
+							"response": []
+						},
+						{
+							"name": "Step 3 - CRM Create descriptor - legacyId",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token provided after authorization in the format \"Bearer {ACCESS_TOKEN}\"",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "Your specific API key for your unique Platform configuration ({API_KEY})",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "Unique Identifier for your IMS Organization ({IMS_ORG})",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"@type\": \"xdm:descriptorIdentity\",\r\n  \"xdm:sourceSchema\": \"{{CRM_SCHEMA_ID}}\",\r\n  \"xdm:sourceVersion\": 1,\r\n  \"xdm:sourceProperty\": \"/{{TENANT_ID}}/idDetails/legacyId\",\r\n  \"xdm:namespace\": \"legacyId\",\r\n  \"xdm:property\": \"xdm:code\",\r\n  \"xdm:isPrimary\": false\r\n}\r\n"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/:CONTAINER_ID/descriptors",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										":CONTAINER_ID",
+										"descriptors"
+									],
+									"variable": [
+										{
+											"key": "CONTAINER_ID",
+											"value": "tenant"
+										}
+									]
+								},
+								"description": "## Call Objective:\n\n- The BODY is specifying a type of descriptor -- in this call it's defining an identity within @type\n    \n\n## Lab Task:\n\n- No action/task is necessary\n- Notice that this is repeated a few times for each identity within the schema\n    \n\n## Body Example:\n\n<img src=\"https://content.pstmn.io/4d9d0d43-7b3a-4aa5-898c-b9e12c1338ed/aW1hZ2UucG5n\" width=\"932\" height=\"391\">\n\n## Body Analysis\n\n| **variables** | **comments** |\n| --- | --- |\n| `xdm:isPrimary` | Please notice that in this call its set to `false` (you can't have more than 1 primary ID) |\n\n## Regarding Identities:\n\n- If a schema + dataset have been enabled for profile, sending multiple IDs (declared as identities) on a record will create a graph (node to node) connection.\n- It isn't a requirement that the primary ID needs to be populated on each record\n    \n\n## Key Takeaways:\n\n- This creates a new identity on a field within the schema.\n- No variable capture is required\n    \n\n## API Library Location:\n\n- Schema Registry API\n    - Descriptors\n        - Create a descriptor"
+							},
+							"response": []
+						},
+						{
+							"name": "Step 4 - CRM Create descriptor - email",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token provided after authorization in the format \"Bearer {ACCESS_TOKEN}\"",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "Your specific API key for your unique Platform configuration ({API_KEY})",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "Unique Identifier for your IMS Organization ({IMS_ORG})",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"@type\": \"xdm:descriptorIdentity\",\r\n  \"xdm:sourceSchema\": \"{{CRM_SCHEMA_ID}}\",\r\n  \"xdm:sourceVersion\": 1,\r\n  \"xdm:sourceProperty\": \"/{{TENANT_ID}}/idDetails/email\",\r\n  \"xdm:namespace\": \"Email\",\r\n  \"xdm:property\": \"xdm:code\",\r\n  \"xdm:isPrimary\": false\r\n}\r\n"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/:CONTAINER_ID/descriptors",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										":CONTAINER_ID",
+										"descriptors"
+									],
+									"variable": [
+										{
+											"key": "CONTAINER_ID",
+											"value": "tenant"
+										}
+									]
+								},
+								"description": "## Call Objective:\n\n- The BODY is specifying a type of descriptor -- in this call it's defining an identity within @type\n- Just like the prior calls\n    \n\n## Lab Task:\n\n- No action/task is necessary\n- Notice that this is repeated a few times for each identity within the schema\n    \n\n## API Library Location:\n\n- Schema Registry API\n    - Descriptors\n        - Create a descriptor"
+							},
+							"response": []
+						},
+						{
+							"name": "Step 5 - CRM Modify or update part of a tenant-defined schema (UNION)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "The access token provided after authorization in the format \"Bearer {ACCESS_TOKEN}\"",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "Your specific API key for your unique Platform configuration ({API_KEY})",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "Unique Identifier for your IMS Organization ({IMS_ORG})",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"op\": \"add\",\r\n        \"path\": \"/meta:immutableTags\",\r\n        \"value\": [\r\n            \"union\"\r\n        ]\r\n    }\r\n]\r\n"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/schemaregistry/:CONTAINER_ID/schemas/:SCHEMA_ID_TO_PATCH",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"schemaregistry",
+										":CONTAINER_ID",
+										"schemas",
+										":SCHEMA_ID_TO_PATCH"
+									],
+									"variable": [
+										{
+											"key": "CONTAINER_ID",
+											"value": "tenant"
+										},
+										{
+											"key": "SCHEMA_ID_TO_PATCH",
+											"value": "{{CRM_SCHEMA_META_ALTID}}",
+											"description": "{{insert-your-crm-altid-here}}"
+										}
+									]
+								},
+								"description": "## Call Objective:\n\n- The BODY is specifying a PATCH change on the schema (that was created in an earlier step)\n    \n\n## Lab Task:\n\n- No action/task is necessary\n- **Please notice (warning)**: once a schema has been enabled for profile (which is happening in this step with the `union`) **you cannot delete/remove that schema** or the elements that compose the schema within the sandbox since its been promoted to the Union Schema\n    \n\n## Body Example:\n\n<img src=\"https://content.pstmn.io/d04c3c0c-a6bd-467e-8a72-5de924df2cad/aW1hZ2UucG5n\" width=\"685\" height=\"344\">\n\n## Body Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `op` | specifies the PATCH operation. In this call, it's performing an `add` operation. Depending on certain objects within Platform, you can also perform a `remove` or `replace`. |\n| `path` | specifies which value in the object (in this case, its the schema) that will be altered/patched |\n| value | specifies what value/variable that will be used in the PATCH operation |\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/a4007b7e-59d6-447d-a3a2-39b61c72011c/aW1hZ2UucG5n\" width=\"995\" height=\"472\">\n\n## Key Takeaways:\n\n- The PATCH call alters a prior object (schema)\n- Items promoted to the Union Schema cannot be removed/deleted\n- Additive/new items area allowed to be promoted to the Union Schema\n    \n\n## API Library Location:\n\n- Schema Registry API\n    - Schemas\n        - Update custom schema (PATCH)\n\n## Alteration Calls:\n\n<img src=\"https://content.pstmn.io/def9d749-ac97-4674-8777-221fa63234b3/aW1hZ2UucG5n\" alt=\"\" height=\"450\" width=\"800\">"
+							},
+							"response": []
+						},
+						{
+							"name": "Step 6 - CRM Create a new dataset - CRM",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"/** Begin Adobe-provided Pre-Request Scripts **/",
+											"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+											"pm.request.headers.each(header => {",
+											"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+											"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+											"    }",
+											"});",
+											"",
+											"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+											"pm.request.url.query.remove(q => { ",
+											"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+											"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+											"    } ",
+											"});",
+											"/** End Adobe-provided Pre-Request Scripts **/"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var data = JSON.parse(responseBody);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{ACCESS_TOKEN}}",
+										"description": "- The access token which can be copied from your Experience Platform integration, prefixed with \"Bearer\". For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+										"type": "string"
+									},
+									{
+										"key": "x-api-key",
+										"value": "{{API_KEY}}",
+										"description": "- The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+										"type": "string"
+									},
+									{
+										"key": "x-gw-ims-org-id",
+										"value": "{{IMS_ORG}}",
+										"description": "- The Organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+										"type": "string"
+									},
+									{
+										"key": "x-sandbox-name",
+										"value": "{{SANDBOX_NAME}}",
+										"description": "- The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://docs.adobe.com/content/help/en/experience-platform/sandbox/home.html) for more information.",
+										"type": "string"
+									},
+									{
+										"key": "accept-encoding",
+										"value": "{{accept-encoding}}",
+										"description": "- Used to signal the intent to consume compressed response bodies. Supported encodings: gzip.",
+										"type": "string"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n{\r\n    \"name\": \"{{lab_number}}: CRM Practice\",\r\n    \"description\": \"{{lab_number}}: CRM Practice\",\r\n    \"schemaRef\": {\r\n        \"id\": \"{{CRM_SCHEMA_ID}}\",\r\n        \"contentType\": \"application/vnd.adobe.xed+json;version=1\"\r\n    },\r\n    \"fileDescription\": {\r\n        \"persisted\": true,\r\n        \"containerFormat\": \"parquet\",\r\n        \"format\": \"parquet\"\r\n    }\r\n}\r\n"
+								},
+								"url": {
+									"raw": "https://platform.adobe.io/data/foundation/catalog/dataSets",
+									"protocol": "https",
+									"host": [
+										"platform",
+										"adobe",
+										"io"
+									],
+									"path": [
+										"data",
+										"foundation",
+										"catalog",
+										"dataSets"
+									]
+								},
+								"description": "## Call Objective:\n\n- The BODY is the design/deployment of the dataset (derived from the schema)\n    \n\n## Lab Task:\n\n- Please alter/add the JS snippet (see below) within the Tests area in order to capture the DATASET ID value\n- The capture statement is notably different from the `$id` and `meta:altid` like what was seen in prior calls\n- This ID is needed for connecting sources in future calls\n    \n\n## Code Snippet:\n\n`postman.setEnvironmentVariable(\"CRM_DATASET_ID\", data[0].substring(11, data[0].length));`\n\n## Body Example:\n\n<img src=\"https://content.pstmn.io/9e3282df-edb8-47e9-97b5-fae64259e43c/aW1hZ2UucG5n\" width=\"953\" height=\"468\">\n\n## Body Analysis\n\n| **variables** | **comments** |\n| --- | --- |\n| `name` | The name used to create the dataset (NOTE: this name will also be the used within PostgreSQL, further formatting will also be applied). As a best practice, I prefer to keep the schema and dataset names the same to avoid confusion. |\n| `description` | This gives more context to the dataset (OPTIONAL) |\n| `schemaRef.id` | Specifies which schema to build the dataset from |\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/effd4c6e-3fae-45d0-8290-46d14196be9e/aW1hZ2UucG5n\" width=\"860\" height=\"327\">\n\n## Key Takeaways:\n\n- This creates a new dataset from a schema\n    \n\n## API Library Location:\n\n- Catalog Service API\n    - Datasets\n        - Create a new dataset"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "4 - Source + Dataflow (s3 for CRM)",
+					"item": [
+						{
+							"name": "Source - s3",
+							"item": [
+								{
+									"name": "Step 1 - View Current s3 Connections",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"/** Begin Adobe-provided Pre-Request Scripts **/",
+													"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+													"pm.request.headers.each(header => {",
+													"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+													"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+													"    }",
+													"});",
+													"",
+													"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+													"pm.request.url.query.remove(q => { ",
+													"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+													"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+													"    } ",
+													"});",
+													"/** End Adobe-provided Pre-Request Scripts **/"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"AWS_S3_SPEC_ID\", 'ecadc60c-7455-4d87-84dc-2a0e293d997b');\r",
+													"\r",
+													"// postman.setEnvironmentVariable(\"AWS_S3_SPEC_ID\", data.items[0][\"id\"]);  ecadc60c-7455-4d87-84dc-2a0e293d997b    <-- source\r",
+													"// postman.setEnvironmentVariable(\"AWS_S3_SPEC_ID\", data.items[1][\"id\"]);  4890fc95-5a1f-4983-94bb-e060c08e3f81    <-- destination\r",
+													"\r",
+													"var elementCount = data.items.length;\r",
+													"for (var counter = 0; counter < elementCount; counter++) {\r",
+													"    if (data.items[counter][\"attributes\"][\"isSource\"] == true ) {\r",
+													"        postman.setEnvironmentVariable(\"AWS_S3_SPEC_ID\", data.items[counter][\"id\"]);\r",
+													"        console.log(pm.environment.get(\"AWS_S3_SPEC_ID\"));\r",
+													"    };\r",
+													"};"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{ACCESS_TOKEN}}",
+												"description": "The access token which can be copied from your Experience Platform integration, prefixed with 'Bearer '. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-api-key",
+												"value": "{{API_KEY}}",
+												"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-gw-ims-org-id",
+												"value": "{{IMS_ORG}}",
+												"description": "The organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-sandbox-name",
+												"value": "{{SANDBOX_NAME}}",
+												"description": "All resources in Experience Platform are isolated to specific virtual sandboxes. Requests to Platform APIs require a header that specifies the name of the sandbox in which the operation will take place.",
+												"type": "string"
+											}
+										],
+										"url": {
+											"raw": "https://platform.adobe.io/data/foundation/flowservice/connectionSpecs?property=name==\"amazon-s3\"'",
+											"protocol": "https",
+											"host": [
+												"platform",
+												"adobe",
+												"io"
+											],
+											"path": [
+												"data",
+												"foundation",
+												"flowservice",
+												"connectionSpecs"
+											],
+											"query": [
+												{
+													"key": "property",
+													"value": "name==\"amazon-s3\"'"
+												}
+											]
+										},
+										"description": "## Call Objective:\n\n- Get a list of all the different \"amazon-s3\" connector spec IDs for later operations\n    \n\n## Lab Task:\n\n- Same call seen in (2.1 - Step 2)\n- This JS code, within Tests, is similar to the previous example\n- Instead of hard coding the spec IDs (which is an option), this will loop through and find the correct/matching spec ID as it relates to the s3 bucket being a (1) Source into AEP or (2) Destination.\n    \n\n## Tests Analysis:\n\n| **code blocks** | **comments** |\n| --- | --- |\n| `var data = JSON.parse(responseBody);` | takes the response Body and casts it into a JSON object which can be used to extract/loop through data |\n| `var elementCount = data.items.length;` | Getting the count of elements within \"items\" array in response (in other API calls, it could be \"results\" instead of items) |\n| `for (var counter = 0; counter < elementCount; counter++)` | This will loop through all items (individually) until it reaches the end of the count |\n| `if (data.items[counter][\"attributes\"][\"isSource\"] == true )` | This looks for a particular value in the item. In this case it's {\"attributes\":{\"isSource\": true}} |\n| `postman.setEnvironmentVariable(\"AWS_S3_SPEC_ID\", data.items[counter][\"id\"]);` | Like what was seen earlier, this sets the variable |\n| `console.log(pm.environment.get(\"AWS_S3_SPEC_ID\"));` | This prints the extracted value into the Postman console |\n\n## Scripting Notes:\n\n- Everything is in JS\n- Certain code/commands tie into Postman Runner (which we'll see very soon)\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/d3a3b3f6-0024-4b75-b7e5-64ea5a190a42/aW1hZ2UucG5n\" width=\"1023\" height=\"795\">\n\n## Response Analysis:\n\n| **variables** | **comments** |\n| --- | --- |\n| `id` | spec ID (needed for source + target connections) |\n| `name` | friendly name of the connection spec |\n| `authSpec` | specific settings on the connection |\n| `attributes` | attributes/metadata about the connection |\n\n## Key Takeaways:\n\n- This API shows the spec IDs along with the other parameters/settings needed for deploying connections (for both source and destination)\n    \n\n## API Library Location:\n\n- Flow Service API\n    - Connection specs\n        - List connection specifications"
+									},
+									"response": []
+								},
+								{
+									"name": "Step 2 - Create s3 connection CRM",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"/** Begin Adobe-provided Pre-Request Scripts **/",
+													"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+													"pm.request.headers.each(header => {",
+													"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+													"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+													"    }",
+													"});",
+													"",
+													"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+													"pm.request.url.query.remove(q => { ",
+													"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+													"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+													"    } ",
+													"});",
+													"/** End Adobe-provided Pre-Request Scripts **/",
+													"",
+													"if (pm.environment.get(\"REPEAT_ACCOUNT_COUNT\") > 0){",
+													"    var count_is = true;",
+													"} else if (pm.environment.get(\"REPEAT_ACCOUNT_COUNT\") === 0){",
+													"    pm.environment.unset(\"REPEAT_ACCOUNT_COUNT\");",
+													"    postman.setNextRequest(null);",
+													"} else {",
+													"    pm.environment.set(\"REPEAT_ACCOUNT_COUNT\", 5);",
+													"}",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Check Status', () => {\r",
+													"if (pm.response.code === 201) {\r",
+													"    var data = JSON.parse(responseBody);\r",
+													"    pm.environment.set(\"AWS_S3_CONNECTOR_ID\", data[\"id\"]);\r",
+													"    pm.environment.unset(\"REPEAT_ACCOUNT_COUNT\");\r",
+													"} else {\r",
+													"    if (pm.environment.get(\"REPEAT_ACCOUNT_COUNT\") > 0) {\r",
+													"        var newcount = pm.environment.get(\"REPEAT_ACCOUNT_COUNT\") - 1\r",
+													"        console.log(newcount);\r",
+													"        pm.environment.set(\"REPEAT_ACCOUNT_COUNT\", newcount);\r",
+													"        setTimeout(function () { postman.setNextRequest(\"Step 2 - Create s3 connection CRM\") }, 45000);\r",
+													"    }\r",
+													"}});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{ACCESS_TOKEN}}",
+												"description": "The access token which can be copied from your Experience Platform integration, prefixed with 'Bearer '. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-api-key",
+												"value": "{{API_KEY}}",
+												"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-gw-ims-org-id",
+												"value": "{{IMS_ORG}}",
+												"description": "The organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-sandbox-name",
+												"value": "{{SANDBOX_NAME}}",
+												"description": "All resources in Experience Platform are isolated to specific virtual sandboxes. Requests to Platform APIs require a header that specifies the name of the sandbox in which the operation will take place.",
+												"type": "string"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"AWS S3 Storage Sccount - Summit\",\r\n    \"description\": \"AWS S3 Storage Sccount - Summit\",\r\n    \"auth\": {\r\n        \"specName\": \"Access Key\",\r\n        \"params\": {\r\n            \"s3AccessKey\": \"{{S3_ACCESS_KEY}}\",\r\n            \"s3SecretKey\": \"{{S3_SECRET_KEY}}\"\r\n        }\r\n    },\r\n    \"connectionSpec\": {\r\n        \"id\": \"{{AWS_S3_SPEC_ID}}\",\r\n        \"version\": \"1.0\"\r\n    }\r\n}\r\n"
+										},
+										"url": {
+											"raw": "https://platform.adobe.io/data/foundation/flowservice/connections",
+											"protocol": "https",
+											"host": [
+												"platform",
+												"adobe",
+												"io"
+											],
+											"path": [
+												"data",
+												"foundation",
+												"flowservice",
+												"connections"
+											]
+										},
+										"description": "## Call Objective:\n\n- The BODY is the details of the credentials/account\n    \n\n## Lab Task:\n\n- This POST creates the initial account connection in Amazon s3 bucket\n- Notice that no storage locations/pathways are specified here, that happens later\n    \n\n## Body Example:\n\n<img src=\"https://content.pstmn.io/429a1e6b-ce0d-4107-935c-82fb0b794f3d/aW1hZ2UucG5n\" width=\"640\" height=\"398\">\n\n## Body Analysis:\n\n| **key vars** | **comments** |\n| --- | --- |\n| `s3AccessKey` | s3 bucket Access Key |\n| `s3SecretKey` | s3 bucket Secret Key |\n| `connectionSpec.id` | This specifies which connection is being used (obtained from last step) |\n| `name` | Name of the account connection (should be unique) |\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/c9f0e652-e80b-4ef0-a9f6-10d58d66c63f/aW1hZ2UucG5n\" width=\"847\" height=\"282\">\n\n## Coding Loops:\n\n- Please notice the extra code happening within `Pre-request Script` and `Tests`\n- This is necessary in the event of Amazon (or whichever service for that matter) doesn't respond in time after a connection attempt occurs\n- Typically, loop coding is only needed in scenarios where other 3rd party services are called and might not respond in a timely manner\n    \n\n## Key Takeaways:\n\n- This creates a new connection\n- A single connection can control multiple dataflows (albeit from the same source)\n    \n\n## API Library Location:\n\n- Flow Service API\n    - Connections\n        - Create a new connection\n\n## Documentation Links:\n\n- [https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/create/cloud-storage/s3.html?lang=en](https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/create/cloud-storage/s3.html?lang=en)"
+									},
+									"response": []
+								},
+								{
+									"name": "Step 3 - Test the connectivity of an established connection",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"/** Begin Adobe-provided Pre-Request Scripts **/",
+													"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+													"pm.request.headers.each(header => {",
+													"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+													"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+													"    }",
+													"});",
+													"",
+													"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+													"pm.request.url.query.remove(q => { ",
+													"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+													"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+													"    } ",
+													"});",
+													"/** End Adobe-provided Pre-Request Scripts **/"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"AWS_BASE_CONNECTOR_ID_SUCCESSFUL\", data[\"result\"]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{ACCESS_TOKEN}}",
+												"description": "The access token which can be copied from your Experience Platform integration, prefixed with 'Bearer '. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-api-key",
+												"value": "{{API_KEY}}",
+												"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-gw-ims-org-id",
+												"value": "{{IMS_ORG}}",
+												"description": "The organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-sandbox-name",
+												"value": "{{SANDBOX_NAME}}",
+												"description": "All resources in Experience Platform are isolated to specific virtual sandboxes. Requests to Platform APIs require a header that specifies the name of the sandbox in which the operation will take place.",
+												"type": "string"
+											}
+										],
+										"url": {
+											"raw": "https://platform.adobe.io/data/foundation/flowservice/connections/:CONNECTION_ID/test",
+											"protocol": "https",
+											"host": [
+												"platform",
+												"adobe",
+												"io"
+											],
+											"path": [
+												"data",
+												"foundation",
+												"flowservice",
+												"connections",
+												":CONNECTION_ID",
+												"test"
+											],
+											"variable": [
+												{
+													"key": "CONNECTION_ID",
+													"value": "{{AWS_S3_CONNECTOR_ID}}"
+												}
+											]
+										},
+										"description": "## Call Objective:\n\n- Check if the last connection (that was created) is valid/working\n- This is not a requirement but good to have (in case the prior API call failed)\n    \n\n## Lab Task:\n\n- Confirm connection is working -- this is a status check really\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/29471b11-d39f-44fa-a9da-ab309251c1ce/aW1hZ2UucG5n\" alt=\"\" height=\"325\" width=\"1015\">\n\n## API Library Location:\n\n- Flow Service API\n    - Connections\n        - Test a connection's connectivity"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Landing - Cloud Storage into Platform",
+							"item": [
+								{
+									"name": "Step 4 - Retrieve details of a flow spec for s3",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"/** Begin Adobe-provided Pre-Request Scripts **/",
+													"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+													"pm.request.headers.each(header => {",
+													"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+													"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+													"    }",
+													"});",
+													"",
+													"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+													"pm.request.url.query.remove(q => { ",
+													"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+													"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+													"    } ",
+													"});",
+													"/** End Adobe-provided Pre-Request Scripts **/"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"DATALAKE_CONNECTOR_SPEC_ID\", data.items[0][\"targetConnectionSpecIds\"]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{ACCESS_TOKEN}}",
+												"description": "The access token which can be copied from your Experience Platform integration, prefixed with 'Bearer '. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-api-key",
+												"value": "{{API_KEY}}",
+												"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-gw-ims-org-id",
+												"value": "{{IMS_ORG}}",
+												"description": "The organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-sandbox-name",
+												"value": "{{SANDBOX_NAME}}",
+												"description": "All resources in Experience Platform are isolated to specific virtual sandboxes. Requests to Platform APIs require a header that specifies the name of the sandbox in which the operation will take place.",
+												"type": "string"
+											}
+										],
+										"url": {
+											"raw": "https://platform.adobe.io/data/foundation/flowservice/flowSpecs?property=name==\"CRMToAEP\"",
+											"protocol": "https",
+											"host": [
+												"platform",
+												"adobe",
+												"io"
+											],
+											"path": [
+												"data",
+												"foundation",
+												"flowservice",
+												"flowSpecs"
+											],
+											"query": [
+												{
+													"key": "property",
+													"value": "name==\"CRMToAEP\""
+												}
+											]
+										},
+										"description": "## Call Objective:\n\n- Gathers the target connection spec id for the data lake (where data will be landing within Platform)\n    \n\n## Lab Task:\n\n- No action needed\n- Instead of walking through multiple results iteratively (as was seen in the past), this code assumes that a single result will be rendered.\n- Search on: `?property=name==\"CRMToAEP\"`\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/ac77e03a-5557-482b-8b46-57fa393a724e/aW1hZ2UucG5n\" width=\"862\" height=\"429\">\n\n## API Library Location:\n\n- Flow Service API\n    - Flow specs\n        - List flow specifications\n\n## Documentation Links:\n\n[https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/collect/database-nosql.html?lang=en](https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/collect/database-nosql.html?lang=en)"
+									},
+									"response": []
+								},
+								{
+									"name": "Step 5 - Retrieve details of a flow spec for Datalake",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"/** Begin Adobe-provided Pre-Request Scripts **/",
+													"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+													"pm.request.headers.each(header => {",
+													"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+													"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+													"    }",
+													"});",
+													"",
+													"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+													"pm.request.url.query.remove(q => { ",
+													"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+													"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+													"    } ",
+													"});",
+													"/** End Adobe-provided Pre-Request Scripts **/"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"CLOUD_STOR_FLOWSPEC_ID\", data.items[0][\"id\"]);\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{ACCESS_TOKEN}}",
+												"description": "The access token which can be copied from your Experience Platform integration, prefixed with 'Bearer '. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-api-key",
+												"value": "{{API_KEY}}",
+												"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-gw-ims-org-id",
+												"value": "{{IMS_ORG}}",
+												"description": "The organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-sandbox-name",
+												"value": "{{SANDBOX_NAME}}",
+												"description": "All resources in Experience Platform are isolated to specific virtual sandboxes. Requests to Platform APIs require a header that specifies the name of the sandbox in which the operation will take place.",
+												"type": "string"
+											}
+										],
+										"url": {
+											"raw": "https://platform.adobe.io/data/foundation/flowservice/flowSpecs?property=name==\"CloudStorageToAEP\"",
+											"protocol": "https",
+											"host": [
+												"platform",
+												"adobe",
+												"io"
+											],
+											"path": [
+												"data",
+												"foundation",
+												"flowservice",
+												"flowSpecs"
+											],
+											"query": [
+												{
+													"key": "property",
+													"value": "name==\"CloudStorageToAEP\""
+												}
+											]
+										},
+										"description": "## Call Objective:\n\n- Gathers the target connection spec id for the data lake (where data will be landing within Platform)\n    \n\n## Lab Task:\n\n- No action needed\n- Instead of walking through multiple results iteratively (as was seen in the past), this code assumes that a single result will be rendered.\n- Search on: `?property=name==\"CloudStorageToAEP\"`\n    \n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/34cd0570-6c28-49df-96a0-b30654919cc6/aW1hZ2UucG5n\" width=\"661\" height=\"559\">\n\n## API Library Location:\n\n- Flow Service API\n    - Flow specs\n        - List flow specifications\n\n## Documentation Links:\n\n[https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/collect/cloud-storage.html?lang=en](https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/collect/cloud-storage.html?lang=en)"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Connection - s3",
+							"item": [
+								{
+									"name": "Step 6 - CRM S3 Create a new source connection",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"/** Begin Adobe-provided Pre-Request Scripts **/",
+													"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+													"pm.request.headers.each(header => {",
+													"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+													"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+													"    }",
+													"});",
+													"",
+													"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+													"pm.request.url.query.remove(q => { ",
+													"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+													"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+													"    } ",
+													"});",
+													"/** End Adobe-provided Pre-Request Scripts **/",
+													"",
+													"",
+													"// getting the current year and month and casting it into my Environment file",
+													"var moddate = -1;",
+													"var d    = new Date();",
+													"var mm   = (d.getMonth() + 1 + moddate).toString().padStart(2, \"0\");",
+													"var yyyy = d.getFullYear();",
+													"",
+													"postman.setEnvironmentVariable(\"AWS_MONTH\", mm);",
+													"postman.setEnvironmentVariable(\"AWS_YEAR\", yyyy);",
+													"",
+													"",
+													"// setting the file location within the call itself",
+													"postman.setEnvironmentVariable(\"SUMMIT_PATH_CRM_DATA_FILE_PATH\",      \"/summit2023lab/data/\");       // yes",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"CRM_DATA_SOURCE_CONN_ID\", data[\"id\"]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{ACCESS_TOKEN}}",
+												"description": "The access token which can be copied from your Experience Platform integration, prefixed with 'Bearer '. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-api-key",
+												"value": "{{API_KEY}}",
+												"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-gw-ims-org-id",
+												"value": "{{IMS_ORG}}",
+												"description": "The organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-sandbox-name",
+												"value": "{{SANDBOX_NAME}}",
+												"description": "All resources in Experience Platform are isolated to specific virtual sandboxes. Requests to Platform APIs require a header that specifies the name of the sandbox in which the operation will take place.",
+												"type": "string"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"Source Connection for CRM data - {{AWS_YEAR}}\",\r\n    \"baseConnectionId\": \"{{AWS_S3_CONNECTOR_ID}}\",\r\n    \"description\": \"Source Connection for CRM data - {{AWS_YEAR}}\",\r\n    \"data\": {\r\n        \"format\": \"json\"\r\n    },\r\n    \"params\": {\r\n        \"path\": \"{{SUMMIT_PATH_CRM_DATA_FILE_PATH}}{{AWS_YEAR}}*.json\",\r\n        \"recursive\": \"true\"\r\n    },\r\n    \"connectionSpec\": {\r\n        \"id\": \"{{AWS_S3_SPEC_ID}}\",\r\n        \"version\": \"1.0\"\r\n    }\r\n}"
+										},
+										"url": {
+											"raw": "https://platform.adobe.io/data/foundation/flowservice/sourceConnections",
+											"protocol": "https",
+											"host": [
+												"platform",
+												"adobe",
+												"io"
+											],
+											"path": [
+												"data",
+												"foundation",
+												"flowservice",
+												"sourceConnections"
+											]
+										},
+										"description": "## Call Objective:\n\n- The BODY is the details of the source location (and data aspects)\n    \n\n## Lab Task:\n\n- No action needed\n    \n\n## Body Example:\n\n<img src=\"https://content.pstmn.io/e5cc79e5-67b9-40fe-a57b-c7e498c06081/aW1hZ2UucG5n\" width=\"1012\" height=\"506\">\n\n## Body Analysis:\n\n| **key vars** | **comments** |\n| --- | --- |\n| `baseConnectionId` | previous id from the source/account connection |\n| `data.format` | specifies the data formatting |\n| `params.path` | location of the data -- please note that in the API call you can use limited regex \"\\*\" pattern matching to collect more than a single file (UI does not support this) |\n| `params.recursive` | recursive look into the location |\n| `connectionSpec.id` | This is pointing to the AWS flow spec id |\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/c26c5483-59bb-4697-a680-9959d618836a/aW1hZ2UucG5n\" width=\"932\" height=\"254\">\n\n## Key Takeaways:\n\n- This creates a new source information (for a dataflow)\n- Notice that RegEx is also being used\n    \n\n## API Library Location:\n\n- Flow Service API\n    - Source connections\n        - Create a new source connection\n\n## Documentation Links:\n\n- [https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/create/cloud-storage/s3.html?lang=en](https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/create/cloud-storage/s3.html?lang=en)"
+									},
+									"response": []
+								},
+								{
+									"name": "Step 7 - CRM S3 Create a new target connection",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"/** Begin Adobe-provided Pre-Request Scripts **/",
+													"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+													"pm.request.headers.each(header => {",
+													"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+													"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+													"    }",
+													"});",
+													"",
+													"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+													"pm.request.url.query.remove(q => { ",
+													"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+													"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+													"    } ",
+													"});",
+													"/** End Adobe-provided Pre-Request Scripts **/"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"CRM_DATA_TARGET_CONN_ID\",  data[\"id\"]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{ACCESS_TOKEN}}",
+												"description": "The access token which can be copied from your Experience Platform integration, prefixed with 'Bearer '. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-api-key",
+												"value": "{{API_KEY}}",
+												"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-gw-ims-org-id",
+												"value": "{{IMS_ORG}}",
+												"description": "The organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-sandbox-name",
+												"value": "{{SANDBOX_NAME}}",
+												"description": "All resources in Experience Platform are isolated to specific virtual sandboxes. Requests to Platform APIs require a header that specifies the name of the sandbox in which the operation will take place.",
+												"type": "string"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"Target Connection for CRM data - {{AWS_YEAR}}\",\r\n    \"description\": \"Target Connection for CRM data - {{AWS_YEAR}}\",\r\n    \"data\": {\r\n        \"format\": \"parquet_xdm\",\r\n        \"schema\": {\r\n            \"id\": \"{{CRM_SCHEMA_ID}}\",\r\n            \"version\": \"application/vnd.adobe.xed-full+json;version=1.0\"\r\n        }\r\n    },\r\n    \"params\": {\r\n        \"dataSetId\": \"{{CRM_DATASET_ID}}\"\r\n    },\r\n    \"connectionSpec\": {\r\n        \"id\": \"{{DATALAKE_CONNECTOR_SPEC_ID}}\",\r\n        \"version\": \"1.0\"\r\n    }\r\n}"
+										},
+										"url": {
+											"raw": "https://platform.adobe.io/data/foundation/flowservice/targetConnections",
+											"protocol": "https",
+											"host": [
+												"platform",
+												"adobe",
+												"io"
+											],
+											"path": [
+												"data",
+												"foundation",
+												"flowservice",
+												"targetConnections"
+											]
+										},
+										"description": "## Call Objective:\n\n- The BODY is the details of the target location (schema + dataset)\n    \n\n## Lab Task:\n\n- Within your Collection variables, please add + save these IDs so Postman Runner uses them\n    \n\n## Body Example:\n\n<img src=\"https://content.pstmn.io/7674665e-7600-4a70-a7ce-bb4cc7aef755/aW1hZ2UucG5n\" alt=\"\" height=\"601\" width=\"977\">\n\n## Body Analysis:\n\n| **key vars** | **comments** |\n| --- | --- |\n| `data.format` | specifies the data formatting expected to land |\n| `data.schema.id` | schema ID (created prior) |\n| `params.dataSetId` | dataset ID (created prior) |\n| `connectionSpec.id` | datalake connector ID (from catalog, gathered earlier) |\n\n## Response Example:\n\n<img src=\"https://content.pstmn.io/0611db41-a262-4f15-9a3a-01f8b06154b5/aW1hZ2UucG5n\" alt=\"\" height=\"175\" width=\"767\">\n\n## Key Takeaways:\n\n- This creates a new source information (for a dataflow)\n    \n\n## API Library Location:\n\n- Flow Service API\n    - Target connections\n        - Create a new target connection\n\n## Documentation Links:\n\n- [https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/create/cloud-storage/s3.html?lang=en](https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/create/cloud-storage/s3.html?lang=en)"
+									},
+									"response": []
+								},
+								{
+									"name": "Step 8 - Create a new dataflow",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"/** Begin Adobe-provided Pre-Request Scripts **/",
+													"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+													"pm.request.headers.each(header => {",
+													"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+													"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+													"    }",
+													"});",
+													"",
+													"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+													"pm.request.url.query.remove(q => { ",
+													"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+													"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+													"    } ",
+													"});",
+													"/** End Adobe-provided Pre-Request Scripts **/",
+													"",
+													"var ts = Math.round((new Date()).getTime() / 1000);",
+													"pm.globals.set(\"ts\", ts);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var data = JSON.parse(responseBody);\r",
+													"postman.setEnvironmentVariable(\"CRM_DATA_FLOW_ID\", data[\"id\"]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer {{ACCESS_TOKEN}}",
+												"description": "The access token which can be copied from your Experience Platform integration, prefixed with 'Bearer '. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-api-key",
+												"value": "{{API_KEY}}",
+												"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-gw-ims-org-id",
+												"value": "{{IMS_ORG}}",
+												"description": "The organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](https://docs.adobe.com/content/help/en/experience-platform/tutorials/authentication.html).",
+												"type": "string"
+											},
+											{
+												"key": "x-sandbox-name",
+												"value": "{{SANDBOX_NAME}}",
+												"description": "All resources in Experience Platform are isolated to specific virtual sandboxes. Requests to Platform APIs require a header that specifies the name of the sandbox in which the operation will take place.",
+												"type": "string"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\": \"Dataflow for CRM Data via AWS S3 - {{AWS_YEAR}}\",\r\n    \"description\": \"Dataflow for CRM Data via AWS S3 - {{AWS_YEAR}}\",\r\n    \"flowSpec\": {\r\n        \"id\": \"{{CLOUD_STOR_FLOWSPEC_ID}}\",\r\n        \"version\": \"1.0\"\r\n    },\r\n    \"sourceConnectionIds\": [\r\n        \"{{CRM_DATA_SOURCE_CONN_ID}}\"\r\n    ],\r\n    \"targetConnectionIds\": [\r\n        \"{{CRM_DATA_TARGET_CONN_ID}}\"\r\n    ],\r\n    \"transformations\": [],\r\n    \"scheduleParams\": {\r\n        \"startTime\": \"{{ts}}\",\r\n        \"frequency\": \"minute\",\r\n        \"interval\": \"15\"\r\n    }\r\n}\r\n"
+										},
+										"url": {
+											"raw": "https://platform.adobe.io/data/foundation/flowservice/flows",
+											"protocol": "https",
+											"host": [
+												"platform",
+												"adobe",
+												"io"
+											],
+											"path": [
+												"data",
+												"foundation",
+												"flowservice",
+												"flows"
+											]
+										},
+										"description": "## Call Objective:\n\n- The BODY is the details of the dataflow (source + target combination -- the execution of the feed)\n- This is the final step that completes the feed\n    \n\n## Lab Task:\n\n- No action is needed\n    \n\n## Body Example:\n\n<img src=\"https://content.pstmn.io/052b3ccf-6dba-4f56-b205-30b39b5a4fdf/aW1hZ2UucG5n\" width=\"775\" height=\"579\">\n\n## Body Analysis:\n\n| **key vars** | **comments** |\n| --- | --- |\n| `flowSpec.id` | forgot where this thing lives |\n| `sourceConnectionIds` | source connection ID (created prior) |\n| `targetConnectionIds` | target connection ID (created prior) |\n| `transformations` | in this example, nothing is used since data is already in XDM-compliant JSON format. Within the extra credit section, we'll use Mapper (data prep) to transform data into the schema/dataset format |\n| `scheduleParams` | settings for how often data will be pulled (on poll). Please note that typically the \"smallest\" interval of time is 15 mins. `{{ts}}` is current UNIX TIME calculated. |\n\n## Response Analysis:\n\n<img src=\"https://content.pstmn.io/9c057953-0dc5-48a6-be1d-29342a2f1eb1/aW1hZ2UucG5n\" width=\"806\" height=\"183\">\n\n## Key Takeaways:\n\n- This creates a new a new dataflow -- tying together all the prior steps\n    \n\n## API Library Location:\n\n- Flow Service API\n    - Flows\n        - Create a flow\n\n## Documentation Links:\n\n- [https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/create/cloud-storage/s3.html?lang=en](https://experienceleague.adobe.com/docs/experience-platform/sources/api-tutorials/create/cloud-storage/s3.html?lang=en)"
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"description": "<img src=\"https://content.pstmn.io/5d8d7e35-973f-4390-8fa4-9660362a88da/aW1hZ2UucG5n\" width=\"1279\" height=\"606\">\n\n## Call Sequence:\n\n<img src=\"https://content.pstmn.io/e02fde1f-cb66-4a4b-97bc-bc5be5a03297/aW1hZ2UucG5n\" width=\"800\" height=\"450\">"
+				}
+			],
+			"description": "## Lab Section Announcemment:\n\n**Please do not execute the next series of calls within section 2.2 manually** -- instead, you'll prepare each call to work correctly when Postman Runner is used\n\nIn the prior section (2.1) , it was fine to run those calls manully but the pattern deviates from automation practices\n\n## Section Listing:\n\n<img src=\"https://content.pstmn.io/1d6e7240-bce5-46b2-ab64-8aa196a968df/aW1hZ2UucG5n\" width=\"775\" height=\"885\">\n\n## Using Runner:\n\n<img src=\"https://content.pstmn.io/24f730f8-979c-4b3d-adb4-53d24bb9dc19/aW1hZ2UucG5n\" alt=\"\" height=\"450\" width=\"800\">"
+		},
+		{
+			"name": "-- Reset Practice --",
+			"item": [
+				{
+					"name": "Delete a dataset",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"/** Begin Adobe-provided Pre-Request Scripts **/",
+									"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+									"pm.request.headers.each(header => {",
+									"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+									"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+									"    }",
+									"});",
+									"",
+									"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+									"pm.request.url.query.remove(q => { ",
+									"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+									"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+									"    } ",
+									"});",
+									"/** End Adobe-provided Pre-Request Scripts **/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"description": "The access token which can be copied from your Experience Platform integration, prefixed with \"Bearer\". For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+								"type": "string"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{API_KEY}}",
+								"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+								"type": "string"
+							},
+							{
+								"key": "x-gw-ims-org-id",
+								"value": "{{IMS_ORG}}",
+								"description": "The Organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+								"type": "string"
+							},
+							{
+								"key": "x-sandbox-name",
+								"value": "{{SANDBOX_NAME}}",
+								"description": "The name of the sandbox in which the operation will take place. See the [sandboxes overview documentation](https://adobe.com/go/sandbox-overview-en) for more information.",
+								"type": "string"
+							},
+							{
+								"key": "accept-encoding",
+								"value": "{{accept-encoding}}",
+								"description": "Used to signal the intent to consume compressed response bodies. Supported encodings: gzip.",
+								"type": "string"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "https://platform.adobe.io/data/foundation/catalog/dataSets/:DATASET_ID",
+							"protocol": "https",
+							"host": [
+								"platform",
+								"adobe",
+								"io"
+							],
+							"path": [
+								"data",
+								"foundation",
+								"catalog",
+								"dataSets",
+								":DATASET_ID"
+							],
+							"variable": [
+								{
+									"key": "DATASET_ID",
+									"value": "{{CRM_DATASET_ID}}",
+									"description": "{{CRM_DATASET_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a flow",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"/** Begin Adobe-provided Pre-Request Scripts **/",
+									"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+									"pm.request.headers.each(header => {",
+									"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+									"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+									"    }",
+									"});",
+									"",
+									"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+									"pm.request.url.query.remove(q => { ",
+									"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+									"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+									"    } ",
+									"});",
+									"/** End Adobe-provided Pre-Request Scripts **/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"description": "The access token which can be copied from your Experience Platform integration, prefixed with 'Bearer '. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+								"type": "string"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{API_KEY}}",
+								"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+								"type": "string"
+							},
+							{
+								"key": "x-gw-ims-org-id",
+								"value": "{{IMS_ORG}}",
+								"description": "The organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+								"type": "string"
+							},
+							{
+								"key": "x-sandbox-name",
+								"value": "{{SANDBOX_NAME}}",
+								"description": "All resources in Experience Platform are isolated to specific virtual sandboxes. Requests to Platform APIs require a header that specifies the name of the sandbox in which the operation will take place.",
+								"type": "string"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "https://platform.adobe.io/data/foundation/flowservice/flows/:FLOW_ID",
+							"protocol": "https",
+							"host": [
+								"platform",
+								"adobe",
+								"io"
+							],
+							"path": [
+								"data",
+								"foundation",
+								"flowservice",
+								"flows",
+								":FLOW_ID"
+							],
+							"variable": [
+								{
+									"key": "FLOW_ID",
+									"value": "{{CRM_DATA_FLOW_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete an existing connection",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"/** Begin Adobe-provided Pre-Request Scripts **/",
+									"// Do not send HTTP Headers with empty variables, as Postman will send the literal variable name",
+									"pm.request.headers.each(header => {",
+									"    if (header.value.startsWith(\"{{\") && header.value.endsWith(\"}}\")) {",
+									"        if (!pm.variables.get(header.value.substring(2, header.value.length - 2))) { pm.request.headers.remove(header.key); }",
+									"    }",
+									"});",
+									"",
+									"// Do not send HTTP URL Query Parameters with empty variables, as Postman will send the literal variable name",
+									"pm.request.url.query.remove(q => { ",
+									"    if (q.value.startsWith(\"{{\") && q.value.endsWith(\"}}\")) {",
+									"        return !pm.variables.get(q.value.substring(2, q.value.length - 2));",
+									"    } ",
+									"});",
+									"/** End Adobe-provided Pre-Request Scripts **/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ACCESS_TOKEN}}",
+								"description": "The access token which can be copied from your Experience Platform integration, prefixed with 'Bearer '. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+								"type": "string"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{API_KEY}}",
+								"description": "The API key which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+								"type": "string"
+							},
+							{
+								"key": "x-gw-ims-org-id",
+								"value": "{{IMS_ORG}}",
+								"description": "The organization ID which can be copied from your Experience Platform integration. For more information on how to obtain this value, visit the [authentication tutorial](http://www.adobe.com/go/platform-api-authentication-en).",
+								"type": "string"
+							},
+							{
+								"key": "x-sandbox-name",
+								"value": "{{SANDBOX_NAME}}",
+								"description": "All resources in Experience Platform are isolated to specific virtual sandboxes. Requests to Platform APIs require a header that specifies the name of the sandbox in which the operation will take place.",
+								"type": "string"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "https://platform.adobe.io/data/foundation/flowservice/connections/:CONNECTION_ID/",
+							"protocol": "https",
+							"host": [
+								"platform",
+								"adobe",
+								"io"
+							],
+							"path": [
+								"data",
+								"foundation",
+								"flowservice",
+								"connections",
+								":CONNECTION_ID",
+								""
+							],
+							"variable": [
+								{
+									"key": "CONNECTION_ID",
+									"value": "{{AWS_S3_CONNECTOR_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "## Lab Section:\n\nDelete calls (based on prior objects created)...Please notice that schema/field groups/data types are not deleted here since promotion to profile has occurred previously\n\n## Section Listing:\n\n<img src=\"https://content.pstmn.io/bd5fe0a2-fd5c-4c77-b6c8-b5fdfb1ad09f/aW1hZ2UucG5n\" width=\"787\" height=\"208\">"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// getting the current YYYY-MM-DD and casting it into my Environment file",
+					"var moment     = require('moment');",
+					"var fullDate   = moment().format((\"(YYYY-MM-DD)\"));",
+					"var labPrefix  = pm.collectionVariables.get(\"lab_number_val\") + \" \" + fullDate;",
+					"pm.collectionVariables.set(\"lab_number\", labPrefix);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "lab_number",
+			"value": "Lab 02",
+			"type": "string"
+		},
+		{
+			"key": "lab_number_val",
+			"value": "Lab 02",
+			"type": "string"
+		}
+	]
+}
