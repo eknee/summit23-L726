@@ -588,8 +588,8 @@
 									"variable": [
 										{
 											"key": "SCHEMA_ID",
-											"value": "{{practice_schema_meta_altid}}",
-											"description": "{{practice_schema_meta_altid}}"
+											"value": "",
+											"description": "The previous steps schema $meta:altId"
 										}
 									]
 								},
