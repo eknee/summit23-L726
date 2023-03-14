@@ -503,10 +503,14 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"//Check to ensure the collection variable is set\r",
-											"if (pm.collectionVariables.get(\"practice_schema_meta_altid\") == \"\")\r",
+											"//Check to ensure the params variable :SCHEMA_ID is set\r",
+											"request_params = pm.request.url.variables.toObject()\r",
+											"val = request_params.SCHEMA_ID\r",
+											"\r",
+											"\r",
+											"if (val.length < 1)\r",
 											"{\r",
-											"     throw new Error(\"You forgot to update your Lab 01 collection with the previous steps schema meta:altId\")\r",
+											"     throw new Error(\"You forgot to update your calls :SCHEMA_ID paramater with the previous steps schema meta:altId\")\r",
 											"}"
 										],
 										"type": "text/javascript"
